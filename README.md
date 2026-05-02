@@ -38,3 +38,19 @@ python3 app.py
 
 Denari reads Render's `PORT` environment variable and binds to `0.0.0.0`
 automatically when `PORT` is present.
+
+For persistent SQLite storage on Render:
+
+1. Add a persistent disk mounted at:
+
+```text
+/var/data
+```
+
+2. Add this environment variable:
+
+```text
+DATABASE_PATH=/var/data/denari.db
+```
+
+SQLite creates `denari.db` automatically on first startup.

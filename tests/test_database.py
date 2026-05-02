@@ -1,6 +1,8 @@
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import database
 
@@ -22,6 +24,20 @@ class DatabaseTestCase(unittest.TestCase):
         self.assertEqual(1, len(groups))
         self.assertEqual("General", groups[0]["name"])
         self.assertEqual(0, groups[0]["closed"])
+
+    def test_get_database_path_uses_environment_variable(self):
+        custom_path = Path(self.temp_dir.name) / "custom" / "render.db"
+
+        with patch.dict(os.environ, {"DATABASE_PATH": str(custom_path)}):
+            self.assertEqual(custom_path, database.get_database_path())
+
+    def test_get_connection_creates_parent_directory_for_database_path(self):
+        custom_path = Path(self.temp_dir.name) / "nested" / "denari.db"
+
+        with patch.dict(os.environ, {"DATABASE_PATH": str(custom_path)}):
+            database.initialize_database()
+
+        self.assertTrue(custom_path.exists())
 
     def test_save_expenses_and_calculate_group_balance(self):
         group_id = database.create_group("Alaska")

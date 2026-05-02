@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from contextlib import closing
 from pathlib import Path
@@ -6,8 +7,14 @@ from pathlib import Path
 DATABASE_PATH = Path(__file__).with_name("denari.db")
 
 
+def get_database_path():
+    return Path(os.environ.get("DATABASE_PATH", DATABASE_PATH))
+
+
 def get_connection():
-    connection = sqlite3.connect(DATABASE_PATH)
+    database_path = get_database_path()
+    database_path.parent.mkdir(parents=True, exist_ok=True)
+    connection = sqlite3.connect(database_path)
     connection.row_factory = sqlite3.Row
     return connection
 
