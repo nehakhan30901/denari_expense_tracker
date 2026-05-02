@@ -27,3 +27,14 @@ the current balance, or close the group to mark all of its expenses settled.
 ```sh
 python3 -m unittest discover -s tests
 ```
+
+## Render
+
+Use this start command:
+
+```sh
+python3 app.py
+```
+
+Denari reads Render's `PORT` environment variable and binds to `0.0.0.0`
+automatically when `PORT` is present.

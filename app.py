@@ -1,4 +1,5 @@
 import logging
+import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse
@@ -200,11 +201,22 @@ def log_saved_expense(expense_id, group_id, split):
     )
 
 
-def run(host="127.0.0.1", port=8000):
+def get_server_address():
+    port = int(os.environ.get("PORT", "8000"))
+    host = "0.0.0.0" if "PORT" in os.environ else "127.0.0.1"
+    return host, port
+
+
+def run(host=None, port=None):
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(message)s",
     )
+    if host is None or port is None:
+        default_host, default_port = get_server_address()
+        host = host or default_host
+        port = port or default_port
+
     initialize_database()
     logger.info("database initialized at denari.db")
     server = HTTPServer((host, port), DenariHandler)
