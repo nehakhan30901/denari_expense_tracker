@@ -52,19 +52,14 @@ python3 -m unittest discover -s tests
 
 ## Database
 
-Default local database:
+Production data is stored locally in:
 
 ```text
 denari.db
 ```
 
-Optional persistent path:
-
-```sh
-DATABASE_PATH=/var/data/denari.db
-```
-
-SQLite creates the file automatically on first startup.
+Keep this file to preserve Neha and Stephen's data. Do not delete or clean it
+unless explicitly requested.
 
 ## Git
 
