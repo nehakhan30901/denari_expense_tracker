@@ -50,6 +50,7 @@ class DatabaseTestCase(unittest.TestCase):
             owed_by="Neha",
             owed_to="Stephen",
             owed_amount=500,
+            split_evenly=True,
         )
         database.save_expense(
             group_id=group_id,
@@ -59,9 +60,13 @@ class DatabaseTestCase(unittest.TestCase):
             owed_by="Stephen",
             owed_to="Neha",
             owed_amount=300,
+            split_evenly=False,
         )
 
         self.assertEqual(-200, database.get_balance(group_id))
+        expenses = database.list_expenses(group_id)
+        self.assertEqual(0, expenses[0]["split_evenly"])
+        self.assertEqual(1, expenses[1]["split_evenly"])
 
     def test_mark_expense_settled_excludes_it_from_balance(self):
         group_id = database.create_group("Alaska")

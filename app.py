@@ -69,6 +69,7 @@ class DenariHandler(BaseHTTPRequestHandler):
                 parsed_fields["expense_name"],
                 amount,
                 parsed_fields["paid_by"],
+                parsed_fields["split_evenly"],
             )
             expense_id = save_expense(
                 group_id=selected_group_id,
@@ -84,6 +85,7 @@ class DenariHandler(BaseHTTPRequestHandler):
                 "expense_name": parsed_fields["expense_name"],
                 "amount": parsed_fields["amount_text"],
                 "paid_by": parsed_fields["paid_by"],
+                "split_evenly": parsed_fields["split_evenly"],
             },
             selected_group_id=selected_group_id,
         )
@@ -187,6 +189,7 @@ def split_without_message(split):
         "owed_by": split["owed_by"],
         "owed_to": split["owed_to"],
         "owed_amount": split["owed_amount"],
+        "split_evenly": split["split_evenly"],
     }
 
 

@@ -23,6 +23,7 @@ class ViewsTestCase(unittest.TestCase):
         self.assertIn("<h1>Denari</h1>", html)
         self.assertIn("General (open)", html)
         self.assertIn("No expenses yet.", html)
+        self.assertIn("Split evenly", html)
 
     def test_render_page_escapes_user_visible_values(self):
         html = render_page(

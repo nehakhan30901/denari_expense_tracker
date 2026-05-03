@@ -54,6 +54,10 @@ def initialize_database():
                 )
             if "group_id" not in column_names:
                 connection.execute("ALTER TABLE expenses ADD COLUMN group_id INTEGER")
+            if "split_evenly" not in column_names:
+                connection.execute(
+                    "ALTER TABLE expenses ADD COLUMN split_evenly INTEGER NOT NULL DEFAULT 1"
+                )
 
             default_group_id = ensure_default_group(connection)
             connection.execute(
@@ -119,7 +123,16 @@ def close_group(group_id):
             return cursor.rowcount
 
 
-def save_expense(group_id, expense_name, amount, paid_by, owed_by, owed_to, owed_amount):
+def save_expense(
+    group_id,
+    expense_name,
+    amount,
+    paid_by,
+    owed_by,
+    owed_to,
+    owed_amount,
+    split_evenly=True,
+):
     with closing(get_connection()) as connection:
         with connection:
             cursor = connection.execute(
@@ -131,11 +144,21 @@ def save_expense(group_id, expense_name, amount, paid_by, owed_by, owed_to, owed
                     paid_by,
                     owed_by,
                     owed_to,
-                    owed_amount
+                    owed_amount,
+                    split_evenly
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (group_id, expense_name, amount, paid_by, owed_by, owed_to, owed_amount),
+                (
+                    group_id,
+                    expense_name,
+                    amount,
+                    paid_by,
+                    owed_by,
+                    owed_to,
+                    owed_amount,
+                    int(split_evenly),
+                ),
             )
             return cursor.lastrowid
 
@@ -153,6 +176,7 @@ def list_expenses(group_id):
                 owed_by,
                 owed_to,
                 owed_amount,
+                split_evenly,
                 settled,
                 created_at
             FROM expenses

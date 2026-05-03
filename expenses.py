@@ -6,6 +6,7 @@ def parse_expense_fields(fields):
         "expense_name": fields.get("expense_name", [""])[0].strip(),
         "amount_text": fields.get("amount", [""])[0].strip(),
         "paid_by": fields.get("paid_by", [""])[0].strip(),
+        "split_evenly": fields.get("split_evenly", ["off"])[0] == "on",
     }
 
 
@@ -32,8 +33,8 @@ def validate_expense(expense_name, amount_text, paid_by, selected_group):
     return amount, None
 
 
-def split_expense(expense_name, amount, paid_by):
-    owed_amount = amount / 2
+def split_expense(expense_name, amount, paid_by, split_evenly=True):
+    owed_amount = amount / 2 if split_evenly else amount
     if paid_by == "Neha":
         owed_by = "Stephen"
         owed_to = "Neha"
@@ -48,5 +49,6 @@ def split_expense(expense_name, amount, paid_by):
         "owed_by": owed_by,
         "owed_to": owed_to,
         "owed_amount": owed_amount,
+        "split_evenly": split_evenly,
         "message": f"{owed_by} owes {owed_to} ${owed_amount:.2f} for {expense_name}",
     }

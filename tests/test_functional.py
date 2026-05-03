@@ -88,6 +88,7 @@ class FunctionalTestCase(unittest.TestCase):
             "expense_name": "Flight",
             "amount": "1000",
             "paid_by": "Stephen",
+            "split_evenly": "on",
         })
 
         self.assertEqual(303, response.status)
@@ -98,12 +99,36 @@ class FunctionalTestCase(unittest.TestCase):
         self.assertEqual("Flight", expenses[0]["expense_name"])
         self.assertEqual("Neha", expenses[0]["owed_by"])
         self.assertEqual(500, expenses[0]["owed_amount"])
+        self.assertEqual(1, expenses[0]["split_evenly"])
 
         page_response, page_body = self.request("GET", f"/?group_id={group_id}")
         html = page_body.decode("utf-8")
         self.assertEqual(200, page_response.status)
         self.assertIn('value=""  required', html)
         self.assertIn("Neha owes Stephen $500.00 for this group.", html)
+
+    def test_add_expense_can_make_other_person_owe_full_amount(self):
+        group_id = database.create_group("Alaska")
+        response, _ = self.post_form({
+            "action": "add_expense",
+            "group_id": group_id,
+            "expense_name": "Towel",
+            "amount": "25",
+            "paid_by": "Neha",
+        })
+
+        self.assertEqual(303, response.status)
+        expenses = database.list_expenses(group_id)
+        self.assertEqual(1, len(expenses))
+        self.assertEqual("Stephen", expenses[0]["owed_by"])
+        self.assertEqual(25, expenses[0]["owed_amount"])
+        self.assertEqual(0, expenses[0]["split_evenly"])
+
+        page_response, page_body = self.request("GET", f"/?group_id={group_id}")
+        html = page_body.decode("utf-8")
+        self.assertEqual(200, page_response.status)
+        self.assertIn("Stephen owes Neha $25.00 for this group.", html)
+        self.assertIn("<td class=\"status-cell\">Full</td>", html)
 
     def test_invalid_expense_does_not_save(self):
         group_id = database.create_group("Alaska")

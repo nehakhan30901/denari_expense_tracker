@@ -114,6 +114,19 @@ PAGE_TEMPLATE = """<!doctype html>
       border: 1px solid var(--line);
       border-radius: 8px;
     }
+    .checkbox-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      color: var(--ink);
+      font-weight: bold;
+      font-size: 15px;
+    }
+    .checkbox-field input {
+      width: auto;
+      margin: 0;
+    }
     .group-status {
       color: var(--muted);
     }
@@ -275,6 +288,11 @@ PAGE_TEMPLATE = """<!doctype html>
           <option value="Stephen" $stephen_selected>Stephen</option>
         </select>
 
+        <label class="checkbox-field" for="split_evenly">
+          <input id="split_evenly" name="split_evenly" type="checkbox" $split_evenly_checked $form_disabled>
+          Split evenly
+        </label>
+
         <button type="submit" $form_disabled>Submit expense</button>
       </form>
       $result_html
@@ -294,6 +312,7 @@ PAGE_TEMPLATE = """<!doctype html>
           <th>Expense</th>
           <th>Amount</th>
           <th>Paid by</th>
+          <th>Split</th>
           <th>Owed by</th>
           <th>Owed amount</th>
           <th>Status</th>

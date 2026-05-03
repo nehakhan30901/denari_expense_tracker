@@ -12,10 +12,12 @@ def render_page(result=None, error=None, values=None, selected_group_id=None):
     expense_name = escape(values.get("expense_name", ""))
     amount = escape(values.get("amount", ""))
     paid_by = values.get("paid_by", "")
+    split_evenly = values.get("split_evenly", True)
 
     result_html = render_message(result, error)
     neha_selected = "selected" if paid_by == "Neha" else ""
     stephen_selected = "selected" if paid_by == "Stephen" else ""
+    split_evenly_checked = "checked" if split_evenly else ""
     group_closed = bool(selected_group and selected_group["closed"])
     form_disabled = "disabled" if group_closed or selected_group is None else ""
     selected_group_name = selected_group["name"] if selected_group else "No group"
@@ -30,6 +32,7 @@ def render_page(result=None, error=None, values=None, selected_group_id=None):
         form_disabled=form_disabled,
         neha_selected=neha_selected,
         stephen_selected=stephen_selected,
+        split_evenly_checked=split_evenly_checked,
         result_html=result_html,
         balance_html=render_balance(selected_group_id),
         expenses_html=render_expenses(selected_group_id),
@@ -104,11 +107,11 @@ def render_balance(selected_group_id):
 
 def render_expenses(selected_group_id):
     if selected_group_id is None:
-        return '<tr><td class="empty" colspan="8">No group selected.</td></tr>'
+        return '<tr><td class="empty" colspan="9">No group selected.</td></tr>'
 
     expenses = list_expenses(selected_group_id)
     if not expenses:
-        return '<tr><td class="empty" colspan="8">No expenses yet.</td></tr>'
+        return '<tr><td class="empty" colspan="9">No expenses yet.</td></tr>'
 
     rows = []
     for expense in expenses:
@@ -120,6 +123,7 @@ def render_expenses(selected_group_id):
 def render_expense_row(expense, selected_group_id):
     is_settled = bool(expense["settled"])
     status = "Settled" if is_settled else "Unsettled"
+    split_mode = "Split" if expense["split_evenly"] else "Full"
     created_date = expense["created_at"].split(" ", 1)[0]
     action = "Done"
     row_class = "settled-row" if is_settled else ""
@@ -139,6 +143,7 @@ def render_expense_row(expense, selected_group_id):
         f"<td>{escape(expense['expense_name'])}</td>"
         f"<td class=\"number-cell\">${expense['amount']:.2f}</td>"
         f"<td class=\"status-cell\">{escape(expense['paid_by'])}</td>"
+        f"<td class=\"status-cell\">{split_mode}</td>"
         f"<td class=\"status-cell\">{escape(expense['owed_by'])}</td>"
         f"<td class=\"number-cell\">${expense['owed_amount']:.2f}</td>"
         f"<td class=\"status-cell\">{status}</td>"
